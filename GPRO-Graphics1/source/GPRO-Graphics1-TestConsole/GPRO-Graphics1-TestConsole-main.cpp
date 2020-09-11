@@ -15,8 +15,8 @@
 */
 
 /*
-	GPRO-Graphics1.c/.cpp
-	Main source file for GPRO-Graphics1 library.
+	gproVector.h
+	Interface for vectors. Sets an example for C and C++ compatible headers.
 
 	Modified by: Colin Keilbach
 	Modified because: Lab for Graphics 1
@@ -65,6 +65,17 @@ void testVector()
 
 using namespace std;
 
+vec3 colorRay(const ray& r) {
+	if (sphere(vec3(0, 0, -1), 0.5, r)) { //Setting the origin vec3.z to anything but 0 does not render any red
+		                                  //When set to 0 the entire image turns red
+		return vec3(1, 0, 0);
+	}
+	float length = sqrt((r.direction().x * r.direction().x) + (r.direction().y * r.direction().y) + (r.direction().z * r.direction().z)); //Get length
+	vec3 unitDirection = r.direction() / length; //Get unit direction
+	float t = static_cast<float>((unitDirection.y + 1) * 0.5);
+	return vec3(1.0f, 1.0f, 1.0f) * (1.0f - t) + vec3(0.5f, 0.7f, 1.0f) * t;
+}
+
 int main(int const argc, char const* const argv[])
 {
 	//Code by Daniel Buckstein
@@ -83,7 +94,6 @@ int main(int const argc, char const* const argv[])
 	printf("\n\n");
 	system("pause");
 
-
 	//Code by Colin Keilbach
 
 	//File stream for making image
@@ -91,7 +101,7 @@ int main(int const argc, char const* const argv[])
 	imageOut.open("image.pmm");
 
 	//Image Size
-	const float aspect_ratio = 16.0 / 9.0;
+	const float aspect_ratio = 16.0f / 9.0f;
 	const int image_width = 400;
 	const int image_height = static_cast<int>(image_width / aspect_ratio); //Sets height based off of width
 
@@ -101,7 +111,7 @@ int main(int const argc, char const* const argv[])
 	//Camera
 	float viewport_height = 2.0;
 	float viewport_width = aspect_ratio * viewport_height;
-	float focal_length = 1.0;
+	float focal_length = 1.0f;
 
 	vec3 origin(0, 0, 0);
 	vec3 horizontal(viewport_width, 0, 0);
@@ -115,26 +125,26 @@ int main(int const argc, char const* const argv[])
 	// patterns and colors you get
 
 	for (int j = image_height - 1; j >= 0; --j) {
-		cout << "Scanlines left: " << j << endl; //New Line
+		cout << "Scanlines left: " << j << endl; //Lines left
 		for (int i = 0; i < image_width; ++i) {
-			float u = double(i) / (image_width - 1);
-			float v = double(i) / (image_height - 1);
+			float u = float(i) / (image_width - 1);
+			float v = float(i) / (image_height - 1);
 
 			ray r(origin, lower_left_corner + horizontal * u + vertical * v - origin); //ray moves from the origin through the camera
 
 			vec3 color = colorRay(r);
 
+			//Setting up colors
 			int ir = static_cast<int>(255.999 * color.x);
 			int ig = static_cast<int>(255.999 * color.y);
 			int ib = static_cast<int>(255.999 * color.z);
 
+			//Image output
 			imageOut << ir << ' ' << ig << ' ' << ib << "\n";
 		}
 		system("cls"); //Clear the console for progress
 	}
 	cout << "Done!\n";
-
-	 
 
 	system("pause");
 }

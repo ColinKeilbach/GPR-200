@@ -15,8 +15,8 @@
 */
 
 /*
-	gproVector.h
-	Interface for vectors. Sets an example for C and C++ compatible headers.
+	GPRO-Graphics1.c/.cpp
+	Main source file for GPRO-Graphics1 library.
 
 	Modified by: Colin Keilbach
 	Modified because: Graphic programming class
@@ -105,28 +105,30 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 #endif	// !_GPRO_VECTOR_H_
 
 //Code by Colin Keilbach
+#include <cmath>
 
 vec3 operator *(vec3 vec, float t) {
 	vec3 out(vec.x * t, vec.y * t, vec.x * t); //Multiplay vec3 by float value
 	return out;
 }
 
-vec3 operator /(vec3 vec, float t) {
+vec3 operator *(vec3 vec, vec3 t) {
+	vec3 out(vec.x * t.x, vec.y * t.y, vec.x * t.y); //Multiplay vec3 by vec3
+	return out;
+}
+
+vec3 operator /(vec3 vec, float t) { //Divide vec3 by float
 	vec3 out(vec.x / t, vec.y / t, vec.z / t);
 	return out;
 }
 
-vec3 operator -(vec3 u, vec3 v) {
+vec3 operator -(vec3 u, vec3 v) { //subtract vec3 by vec3
 	vec3 out(u.x - v.x, u.y - v.y, u.z - v.z);
 	return out;
 }
 
-vec3 colorRay(const ray r) {
-
-	float length = sqrt((r.direction().x * r.direction().x) + (r.direction().y * r.direction().y) + (r.direction().z * r.direction().z)); //Get length
-	vec3 unitDirection = r.direction() / length;
-	float t = (unitDirection.y + 1) * 0.5;
-	return vec3(1.0, 1.0, 1.0)//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float dot(vec3 u, vec3 v) { //get the dot product of 2 vec3
+	return (u.x * v.x + u.y * v.y + u.z * v.z);
 }
 
 class ray {
@@ -147,6 +149,17 @@ public:
 		return orig + dir * t;
 	}
 private:
-	vec3 orig;
-	vec3 dir;
+	vec3 orig; //where the ray starts
+	vec3 dir; //direction the ray is pointing
 };
+
+//Code from https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere/creatingourfirstraytracedimage
+bool sphere(const vec3& center, double radius, const ray& r) {
+	vec3 oc = r.origin() - center;
+	float a = dot(r.direction(), r.direction());
+	float b = dot(oc, r.direction()) * 2.0f;
+	float c = static_cast<float>(dot(oc, oc) - radius * radius);
+	float discriminant = b * b - 4 * a * c;
+
+	return (discriminant > 0);
+}
