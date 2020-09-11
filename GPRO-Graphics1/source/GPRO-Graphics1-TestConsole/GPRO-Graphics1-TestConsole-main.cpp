@@ -15,13 +15,12 @@
 */
 
 /*
-	GPRO-Graphics1-TestConsole-main.c/.cpp
-	Main entry point source file for a Windows console application.
+	GPRO-Graphics1.c/.cpp
+	Main source file for GPRO-Graphics1 library.
 
-	Modified by: ____________
-	Modified because: ____________
+	Modified by: Colin Keilbach
+	Modified because: Lab for Graphics 1
 */
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,11 +51,90 @@ void testVector()
 #endif	// __cplusplus
 }
 
+//Code by Daniel Buckstein
+#ifdef __cplusplus
+//C++ file io includes
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <fstream>
+#else // !__cplusplus
+// C file io includes
+#include <stdio.h>
+#endif //__cplusplus
+
+using namespace std;
 
 int main(int const argc, char const* const argv[])
 {
+	//Code by Daniel Buckstein
+#ifdef __cplusplus
+	std::ofstream file("openpls.txt"); //opens a file in in write mode in C++
+	std::string test = "hello";        //Create string
+	file << test << std::endl;
+	file.close();
+#else // !__cplusplus
+// C file io includes
+
+#endif //__cplusplus
+
 	testVector();
 
 	printf("\n\n");
+	system("pause");
+
+
+	//Code by Colin Keilbach
+
+	//File stream for making image
+	ofstream imageOut;
+	imageOut.open("image.pmm");
+
+	//Image Size
+	const float aspect_ratio = 16.0 / 9.0;
+	const int image_width = 400;
+	const int image_height = static_cast<int>(image_width / aspect_ratio); //Sets height based off of width
+
+	//Render
+	imageOut << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+	//Camera
+	float viewport_height = 2.0;
+	float viewport_width = aspect_ratio * viewport_height;
+	float focal_length = 1.0;
+
+	vec3 origin(0, 0, 0);
+	vec3 horizontal(viewport_width, 0, 0);
+	vec3 vertical(0, viewport_height, 0);
+	vec3 lower_left_corner = origin - vertical / 2 - horizontal / 2 - vec3(0, 0, focal_length);
+
+	//P3 means the colore are in ASCII
+	// 255 for max color
+
+	// Changing the symbols and numbers in the for loops changes the 
+	// patterns and colors you get
+
+	for (int j = image_height - 1; j >= 0; --j) {
+		cout << "Scanlines left: " << j << endl; //New Line
+		for (int i = 0; i < image_width; ++i) {
+			float u = double(i) / (image_width - 1);
+			float v = double(i) / (image_height - 1);
+
+			ray r(origin, lower_left_corner + horizontal * u + vertical * v - origin); //ray moves from the origin through the camera
+
+			vec3 color = colorRay(r);
+
+			int ir = static_cast<int>(255.999 * color.x);
+			int ig = static_cast<int>(255.999 * color.y);
+			int ib = static_cast<int>(255.999 * color.z);
+
+			imageOut << ir << ' ' << ig << ' ' << ib << "\n";
+		}
+		system("cls"); //Clear the console for progress
+	}
+	cout << "Done!\n";
+
+	 
+
 	system("pause");
 }

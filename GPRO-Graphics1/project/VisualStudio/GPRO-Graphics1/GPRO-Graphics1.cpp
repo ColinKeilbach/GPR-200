@@ -15,10 +15,11 @@
 */
 
 /*
-	GPRO-Graphics1.c/.cpp
-	Main source file for GPRO-Graphics1 library.
+	GPRO-Graphics1-TestConsole-main.c/.cpp
+	Main entry point source file for a Windows console application.
 
 	Modified by: ____________
 	Modified because: ____________
 */
+
 

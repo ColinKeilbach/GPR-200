@@ -18,8 +18,8 @@
 	gproVector.h
 	Interface for vectors. Sets an example for C and C++ compatible headers.
 
-	Modified by: ____________
-	Modified because: ____________
+	Modified by: Colin Keilbach
+	Modified because: Graphic programming class
 */
 
 #ifndef _GPRO_VECTOR_H_
@@ -103,3 +103,50 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 
 
 #endif	// !_GPRO_VECTOR_H_
+
+//Code by Colin Keilbach
+
+vec3 operator *(vec3 vec, float t) {
+	vec3 out(vec.x * t, vec.y * t, vec.x * t); //Multiplay vec3 by float value
+	return out;
+}
+
+vec3 operator /(vec3 vec, float t) {
+	vec3 out(vec.x / t, vec.y / t, vec.z / t);
+	return out;
+}
+
+vec3 operator -(vec3 u, vec3 v) {
+	vec3 out(u.x - v.x, u.y - v.y, u.z - v.z);
+	return out;
+}
+
+vec3 colorRay(const ray r) {
+
+	float length = sqrt((r.direction().x * r.direction().x) + (r.direction().y * r.direction().y) + (r.direction().z * r.direction().z)); //Get length
+	vec3 unitDirection = r.direction() / length;
+	float t = (unitDirection.y + 1) * 0.5;
+	return vec3(1.0, 1.0, 1.0)//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+class ray {
+public:
+	//Constructors
+	ray() {}
+	ray(const vec3& origin, const vec3& direction) {
+		orig = origin;
+		dir = direction;
+	}
+
+	//Get Points
+	vec3 origin() const { return orig; }
+	vec3 direction() const { return dir; }
+
+	//Gets ray location at t (time)
+	vec3 at(float t) const {
+		return orig + dir * t;
+	}
+private:
+	vec3 orig;
+	vec3 dir;
+};
